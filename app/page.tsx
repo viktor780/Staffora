@@ -12,21 +12,32 @@ export default function RootLayout({
 }) {
   return (
     <html lang="de">
-      <body className="bg-gray-100">
+      <body>
         <header className="border-b border-gray-200 bg-white">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 md:px-10">
-            <a href="/jobs" className="flex items-center gap-4">
+          <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 md:px-10">
+            
+            <a href="/jobs" className="flex items-center gap-3">
+              
+              <img
+                src="/logo.png"
+                alt="Staffora"
+                className="h-10 w-10 rounded-xl object-cover"
+              />
+
               <div>
-                <p className="text-2xl font-bold tracking-tight text-gray-950">
+                <p className="text-lg font-bold text-gray-950">
                   Staffora
                 </p>
-                <p className="text-sm font-medium text-gray-500">
+
+                <p className="text-xs font-medium text-gray-500">
                   Real Job Preview
                 </p>
               </div>
+
             </a>
 
             <nav className="flex items-center gap-3">
+              
               <a
                 href="/jobs"
                 className="text-sm font-medium text-gray-700 hover:text-gray-950"
@@ -36,10 +47,11 @@ export default function RootLayout({
 
               <a
                 href="/jobs/new"
-                className="rounded-xl bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
+                className="rounded-xl bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
               >
                 Neuer Job
               </a>
+
             </nav>
           </div>
         </header>
