@@ -1,24 +1,65 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-export const dynamic = "force-dynamic";
+type Job = {
+  id: number;
+  job_title: string;
+  location: string | null;
+  description: string | null;
+};
 
-export default async function JobsPage() {
-  const { data: jobs, error } = await supabase
-    .from("jobs")
-    .select("*")
-    .order("created_at", { ascending: false });
+export default function JobsPage() {
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (error) {
+  async function loadJobs() {
+    const { data, error } = await supabase
+      .from("jobs")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    setJobs(data || []);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    loadJobs();
+  }, []);
+
+  async function handleDelete(jobId: number) {
+    const confirmed = window.confirm(
+      "Job wirklich löschen?"
+    );
+
+    if (!confirmed) return;
+
+    const { error } = await supabase
+      .from("jobs")
+      .delete()
+      .eq("id", jobId);
+
+    if (error) {
+      alert("Fehler beim Löschen");
+      return;
+    }
+
+    setJobs((prev) =>
+      prev.filter((job) => job.id !== jobId)
+    );
+  }
+
+  if (loading) {
     return (
       <main className="min-h-screen bg-gray-100 p-4 md:p-10">
         <div className="mx-auto max-w-5xl rounded-2xl bg-white p-8 shadow-lg">
-          <h1 className="text-2xl font-bold text-red-600">
-            Fehler beim Laden
-          </h1>
-
-          <p className="mt-3 text-gray-800">
-            {error.message}
-          </p>
+          Lade Jobs...
         </div>
       </main>
     );
@@ -49,7 +90,7 @@ export default async function JobsPage() {
 
         <div className="space-y-6">
 
-          {jobs && jobs.length > 0 ? (
+          {jobs.length > 0 ? (
             jobs.map((job) => (
               <div
                 key={job.id}
@@ -88,6 +129,13 @@ export default async function JobsPage() {
                     >
                       Bewerber anzeigen
                     </a>
+
+                    <button
+                      onClick={() => handleDelete(job.id)}
+                      className="rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-sm font-medium text-red-700 transition hover:bg-red-100"
+                    >
+                      Löschen
+                    </button>
 
                   </div>
                 </div>
