@@ -144,7 +144,7 @@ export default function ApplyPage() {
           </h2>
 
           <p className="mt-2 text-base leading-relaxed text-gray-800">
-            Fülle kurz deine Daten aus. Die Zeitarbeitsfirma meldet sich danach bei dir.
+            Fülle kurz deine Daten aus, wenn die Tätigkeit für dich interessant klingt.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-5">
