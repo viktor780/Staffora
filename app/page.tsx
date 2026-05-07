@@ -1,63 +1,24 @@
-import "./globals.css";
-
-export const metadata = {
-  title: "Staffora",
-  description: "Tätigkeitsvorschauen für bessere Bewerberauswahl.",
-};
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function HomePage() {
   return (
-    <html lang="de">
-      <body>
-        <header className="border-b border-gray-200 bg-white">
-          <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 md:px-10">
-            
-            <a href="/jobs" className="flex items-center gap-3">
-              
-              <img
-                src="/logo.png"
-                alt="Staffora"
-                className="h-10 w-10 rounded-xl object-cover"
-              />
+    <main className="flex min-h-screen items-center justify-center bg-gray-100 p-10">
+      <div className="text-center">
+        <h1 className="text-5xl font-bold text-gray-950">
+          Staffora
+        </h1>
 
-              <div>
-                <p className="text-lg font-bold text-gray-950">
-                  Staffora
-                </p>
+        <p className="mt-4 text-lg text-gray-700">
+          Real Job Preview für moderne Personalvermittlung.
+        </p>
 
-                <p className="text-xs font-medium text-gray-500">
-                  Real Job Preview
-                </p>
-              </div>
-
-            </a>
-
-            <nav className="flex items-center gap-3">
-              
-              <a
-                href="/jobs"
-                className="text-sm font-medium text-gray-700 hover:text-gray-950"
-              >
-                Jobs
-              </a>
-
-              <a
-                href="/jobs/new"
-                className="rounded-xl bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
-              >
-                Neuer Job
-              </a>
-
-            </nav>
-          </div>
-        </header>
-
-        {children}
-      </body>
-    </html>
+        <div className="mt-8">
+          <a
+            href="/jobs"
+            className="rounded-xl bg-black px-6 py-3 text-white transition hover:bg-gray-800"
+          >
+            Zur Jobübersicht
+          </a>
+        </div>
+      </div>
+    </main>
   );
 }
