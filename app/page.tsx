@@ -1,63 +1,86 @@
-import "./globals.css";
-
-export const metadata = {
-  title: "Staffora",
-  description: "Tätigkeitsvorschauen für bessere Bewerberauswahl.",
-};
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function NewJobPage() {
   return (
-    <html lang="de">
-      <body>
-        <header className="border-b border-gray-200 bg-white">
-          <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 md:px-10">
-            
-            <a href="/jobs" className="flex items-center gap-3">
-              
-              <img
-                src="/logo.png"
-                alt="Staffora"
-                className="h-10 w-10 rounded-xl object-cover"
-              />
+    <main className="min-h-screen bg-gray-100 p-10">
+      <div className="mx-auto max-w-3xl rounded-2xl bg-white p-8 shadow-lg">
 
-              <div>
-                <p className="text-lg font-bold text-gray-950">
-                  Staffora
-                </p>
+        <h1 className="text-3xl font-bold text-gray-900">
+          Neuen Job erstellen
+        </h1>
 
-                <p className="text-xs font-medium text-gray-500">
-                  Real Job Preview
-                </p>
-              </div>
+        <p className="mt-2 text-gray-600">
+          Erstelle eine Tätigkeitsvorschau für Bewerber.
+        </p>
 
-            </a>
+        <form className="mt-8 space-y-6">
 
-            <nav className="flex items-center gap-3">
-              
-              <a
-                href="/jobs"
-                className="text-sm font-medium text-gray-700 hover:text-gray-950"
-              >
-                Jobs
-              </a>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Jobtitel
+            </label>
 
-              <a
-                href="/jobs/new"
-                className="rounded-xl bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
-              >
-                Neuer Job
-              </a>
-
-            </nav>
+            <input
+              type="text"
+              placeholder="z. B. Kommissionierer Frühschicht"
+              className="mt-2 w-full rounded-xl border border-gray-300 p-3"
+            />
           </div>
-        </header>
 
-        {children}
-      </body>
-    </html>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Einsatzort
+            </label>
+
+            <input
+              type="text"
+              placeholder="z. B. Kleinostheim"
+              className="mt-2 w-full rounded-xl border border-gray-300 p-3"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Schichtmodell
+            </label>
+
+            <input
+              type="text"
+              placeholder="z. B. Früh-/Spätschicht"
+              className="mt-2 w-full rounded-xl border border-gray-300 p-3"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Video-Link
+            </label>
+
+            <input
+              type="url"
+              placeholder="https://..."
+              className="mt-2 w-full rounded-xl border border-gray-300 p-3"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Tätigkeitsbeschreibung
+            </label>
+
+            <textarea
+              placeholder="Beschreibe kurz die Tätigkeit"
+              className="mt-2 min-h-32 w-full rounded-xl border border-gray-300 p-3"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="rounded-xl bg-black px-6 py-3 text-white transition hover:bg-gray-800"
+          >
+            Job speichern
+          </button>
+
+        </form>
+      </div>
+    </main>
   );
 }
