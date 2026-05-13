@@ -1,237 +1,154 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-type Job = {
-  id: number;
-  job_title: string;
-  location: string | null;
-  video_url: string | null;
-  description: string | null;
-};
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
 
-export default function ApplyPage() {
-  const params = useParams();
-  const jobId = Number(params.id);
-
-  const [job, setJob] = useState<Job | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [availability, setAvailability] = useState("");
-  const [experience, setExperience] = useState("");
-  const [message, setMessage] = useState("");
-
-  const inputClass =
-    "mt-2 w-full rounded-xl border border-gray-300 bg-white p-3 text-base text-gray-900 placeholder-gray-500 outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-300";
+export default function ApplyPage({ params }: PageProps) {
+  const [job, setJob] = useState<any>(null);
+  const [jobId, setJobId] = useState<number | null>(null);
 
   useEffect(() => {
     async function loadJob() {
-      const { data, error } = await supabase
+      const resolvedParams = await params;
+      const id = Number(resolvedParams.id);
+
+      setJobId(id);
+
+      const { data } = await supabase
         .from("jobs")
         .select("*")
-        .eq("id", jobId)
+        .eq("id", id)
         .maybeSingle();
 
-      if (error) {
-        console.error(error);
-      }
-
       setJob(data);
-      setLoading(false);
     }
 
     loadJob();
-  }, [jobId]);
+  }, [params]);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function sendResponse(type: string) {
+    if (!jobId) return;
 
-    const { error } = await supabase.from("candidates").insert([
-      {
-        job_id: jobId,
-        name,
-        phone,
-        email,
-        availability,
-        experience,
-        message,
-      },
-    ]);
+    const { error } = await supabase
+      .from("job_responses")
+      .insert([
+        {
+          job_id: jobId,
+          response_type: type,
+        },
+      ]);
 
     if (error) {
-      alert("Fehler beim Absenden: " + error.message);
+      alert("Fehler beim Senden");
       return;
     }
 
-    alert("Danke! Deine Angaben wurden übermittelt.");
+    if (type === "interested") {
+      alert("Danke! Dein Interesse wurde übermittelt.");
+    }
 
-    setName("");
-    setPhone("");
-    setEmail("");
-    setAvailability("");
-    setExperience("");
-    setMessage("");
-  }
+    if (type === "not_interested") {
+      alert("Danke für deine Rückmeldung.");
+    }
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-gray-100 p-4 md:p-10">
-        <div className="mx-auto max-w-3xl rounded-2xl bg-white p-6 text-gray-900 shadow md:p-8">
-          Lade Job...
-        </div>
-      </main>
-    );
+    if (type === "more_info") {
+      alert("Der Recruiter wird sich mit weiteren Informationen melden.");
+    }
   }
 
   if (!job) {
     return (
-      <main className="min-h-screen bg-gray-100 p-4 md:p-10">
-        <div className="mx-auto max-w-3xl rounded-2xl bg-white p-6 shadow md:p-8">
-          <h1 className="text-2xl font-bold text-red-600">
-            Job nicht gefunden
-          </h1>
+      <main className="min-h-screen bg-gray-100 p-6 md:p-10">
+        <div className="mx-auto max-w-4xl rounded-3xl bg-white p-10 shadow-lg">
+          <p className="text-lg text-gray-700">
+            Tätigkeit wird geladen...
+          </p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 p-4 md:p-10">
-      <div className="mx-auto max-w-3xl rounded-2xl bg-white p-5 shadow-lg md:p-8">
-        <p className="mb-4 text-sm font-medium text-gray-600">
+    <main className="min-h-screen bg-gray-100 p-6 md:p-10">
+      <div className="mx-auto max-w-4xl rounded-3xl bg-white p-8 shadow-lg md:p-12">
+
+        <p className="text-sm font-medium text-gray-500">
           Tätigkeitsvorschau #{job.id}
         </p>
 
-        <h1 className="text-2xl font-bold text-gray-950 md:text-3xl">
+        <h1 className="mt-3 text-4xl font-bold text-gray-950">
           {job.job_title}
         </h1>
 
-        <p className="mt-2 text-base text-gray-800">
+        <p className="mt-4 text-xl text-gray-800">
           Einsatzort: {job.location}
         </p>
 
-        <div className="mt-7 md:mt-8">
-          <h2 className="text-lg font-semibold text-gray-950 md:text-xl">
+        <div className="mt-10">
+          <h2 className="text-3xl font-bold text-gray-950">
             Was dich erwartet
           </h2>
 
-          <p className="mt-3 whitespace-pre-line text-base leading-relaxed text-gray-800">
+          <p className="mt-5 whitespace-pre-line text-lg leading-relaxed text-gray-800">
             {job.description || "Keine Beschreibung hinterlegt."}
           </p>
+
+          {job.video_url && (
+            <div className="mt-8">
+              <a
+                href={job.video_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex rounded-2xl bg-black px-6 py-4 text-lg font-medium text-white transition hover:bg-gray-800"
+              >
+                Video ansehen
+              </a>
+            </div>
+          )}
         </div>
 
-        {job.video_url && (
-          <div className="mt-7 md:mt-8">
-            <a
-              href={job.video_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block rounded-xl bg-black px-5 py-3 text-center font-medium text-white transition hover:bg-gray-800 md:inline-block"
-            >
-              Video ansehen
-            </a>
-          </div>
-        )}
+        <div className="mt-14 rounded-3xl bg-gray-50 p-8 md:p-10">
 
-        <div className="mt-8 rounded-2xl bg-gray-50 p-5 md:mt-10 md:p-6">
-          <h2 className="text-lg font-semibold text-gray-950 md:text-xl">
-            Interesse?
+          <h2 className="text-3xl font-bold text-gray-950">
+            Ist diese Tätigkeit interessant für dich?
           </h2>
 
-          <p className="mt-2 text-base leading-relaxed text-gray-800">
-            Fülle kurz deine Daten aus, wenn die Tätigkeit für dich interessant klingt.
+          <p className="mt-4 text-lg leading-relaxed text-gray-700">
+            Schau dir die Tätigkeitsbeschreibung und das Video in Ruhe an
+            und gib anschließend kurz deine Rückmeldung.
           </p>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-5">
-            <div>
-              <label className="block text-sm font-semibold text-gray-800">
-                Name *
-              </label>
-              <input
-                required
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className={inputClass}
-                placeholder="Dein Name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-800">
-                Telefonnummer
-              </label>
-              <input
-                type="text"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className={inputClass}
-                placeholder="z. B. 0176..."
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-800">
-                E-Mail
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={inputClass}
-                placeholder="deine@email.de"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-800">
-                Ab wann bist du verfügbar?
-              </label>
-              <input
-                type="text"
-                value={availability}
-                onChange={(e) => setAvailability(e.target.value)}
-                className={inputClass}
-                placeholder="z. B. sofort, ab nächster Woche"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-800">
-                Hast du Erfahrung in dieser Tätigkeit?
-              </label>
-              <textarea
-                value={experience}
-                onChange={(e) => setExperience(e.target.value)}
-                className={`${inputClass} min-h-24`}
-                placeholder="Kurz beschreiben..."
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-800">
-                Nachricht
-              </label>
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className={`${inputClass} min-h-24`}
-                placeholder="Optional"
-              />
-            </div>
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
 
             <button
-              type="submit"
-              className="w-full rounded-xl bg-black px-6 py-3 font-medium text-white transition hover:bg-gray-800 md:w-auto"
+              onClick={() => sendResponse("interested")}
+              className="rounded-2xl bg-black px-6 py-5 text-lg font-semibold text-white transition hover:bg-gray-800"
             >
-              Interesse senden
+              Interessiert
             </button>
-          </form>
+
+            <button
+              onClick={() => sendResponse("more_info")}
+              className="rounded-2xl border border-gray-300 bg-white px-6 py-5 text-lg font-semibold text-gray-900 transition hover:bg-gray-100"
+            >
+              Mehr Infos
+            </button>
+
+            <button
+              onClick={() => sendResponse("not_interested")}
+              className="rounded-2xl border border-gray-300 bg-white px-6 py-5 text-lg font-semibold text-gray-900 transition hover:bg-gray-100"
+            >
+              Nicht interessant
+            </button>
+
+          </div>
+
         </div>
       </div>
     </main>
